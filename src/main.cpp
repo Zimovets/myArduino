@@ -1,17 +1,21 @@
 #include <Arduino.h>
 
-int redpin = 10;   // select the pin for the red LED
-int bluepin = 8;   // select the pin for the blue LED
-int greenpin = 9;  // select the pin for the green LED
+int buzzerPin = 8;
+int buttonPin = 7;
+
 void setup() {
-    pinMode(redpin, OUTPUT);
-    pinMode(bluepin, OUTPUT);
-    pinMode(greenpin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
 }
 
 void loop() {
-    analogWrite(11, random(256));
-    analogWrite(10, random(256));
-    analogWrite(9, random(256));
-    delay(200);
+  int buttonState = digitalRead(buttonPin);
+
+  if (buttonState == LOW) {
+    digitalWrite(buzzerPin, HIGH);
+  }
+
+  if (buttonState == HIGH) {
+    digitalWrite(buzzerPin, LOW);
+  }
 }
