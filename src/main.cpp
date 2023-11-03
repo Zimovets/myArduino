@@ -1,29 +1,17 @@
 #include <Arduino.h>
 
-unsigned long previousMillis = 0;
-const unsigned long interval = 2000;  // 2 seconds
-
-float voltageCalc(int readVal) { return 5. / 1023 * readVal; }
-
+int redpin = 10;   // select the pin for the red LED
+int bluepin = 8;   // select the pin for the blue LED
+int greenpin = 9;  // select the pin for the green LED
 void setup() {
-    pinMode(A2, INPUT);
-    pinMode(9, OUTPUT);
-    Serial.begin(9600);
+    pinMode(redpin, OUTPUT);
+    pinMode(bluepin, OUTPUT);
+    pinMode(greenpin, OUTPUT);
 }
 
 void loop() {
-    unsigned long currentMillis = millis();
-
-    int resistorValue = analogRead(A2);
-    int resistorMappedValue = map(resistorValue, 0, 1023, 0, 255);
-    analogWrite(9, resistorMappedValue);
-
-    if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
-
-        Serial.println("Read value " + String(resistorValue));
-        Serial.println("Mapped value " + String(resistorMappedValue));
-        Serial.println("Voltage resister " +
-                       String(voltageCalc(resistorValue)));
-    }
+    analogWrite(11, random(256));
+    analogWrite(10, random(256));
+    analogWrite(9, random(256));
+    delay(200);
 }
