@@ -1,14 +1,19 @@
 #include <Arduino.h>
+#include <Servo.h>
 
-int inputPin = A0;
+int servoPin = 9;
+int servoPosition = 180;
+
+Servo myServo;
 
 void setup() {
-  pinMode(inputPin, INPUT);
   Serial.begin(9600);
+  myServo.attach(servoPin);
 }
 
 void loop() {
-  
-  Serial.println(String(analogRead(inputPin) * (5.0 / 1023.0)) + 'v');
-  delay(500);
+  int rundomNum = random(180);
+  Serial.println(rundomNum);
+  myServo.write(rundomNum);
+  delay(1000);
 }
