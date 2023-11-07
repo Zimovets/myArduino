@@ -17,5 +17,5 @@ void loop() {
   int angle = map(analogRead(pinY), 0, 1023, 0, 180);
   servo.write(angle);
   Serial.println(angle);
-  delay(1000);
+  delay(250);
 }
