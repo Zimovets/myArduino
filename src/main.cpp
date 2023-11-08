@@ -1,37 +1,26 @@
 #include <Arduino.h>
-#include <Servo.h>
 
-int pinX = A0;
-int pinY = A1;
-int servoPin = 9;
-int servoPOsition = 0;
-Servo servo;
+#include <Stepper.h>
+
+// Defines the number of steps per rotation
+const int stepsPerRevolution = 2038;
+
+// Creates an instance of stepper class
+// Pins entered in sequence IN1-IN3-IN2-IN4 for proper step sequence
+Stepper myStepper = Stepper(stepsPerRevolution, 8, 10, 9, 11);
 
 void setup() {
-  pinMode(pinX, INPUT);
-  pinMode(pinY, INPUT);
-  Serial.begin(9600);
-  servo.attach(servoPin);
+    // Nothing to do (Stepper Library sets pins as outputs)
 }
 
 void loop() {
-  int angle = map(analogRead(pinY), 0, 1023, 0, 180);
-
-  if(136 < angle && angle < 180 ) {
-    servoPOsition++;
-  }
-
-  if(angle == 180 && servoPOsition < 180 ) {
-    servoPOsition = servoPOsition + 2;
-  }
-
-  if(44 > angle && servoPOsition > 0) {
-    servoPOsition--;
-  }
-
-  if( angle == 0 && servoPOsition > 0) {
-    servoPOsition = servoPOsition - 2;
-  }
-  servo.write(servoPOsition);
-  Serial.println(servoPOsition);
+	// Rotate CW slowly at 5 RPM
+	myStepper.setSpeed(5);
+	myStepper.step(stepsPerRevolution);
+	delay(1000);
+	
+	// Rotate CCW quickly at 10 RPM
+	myStepper.setSpeed(10);
+	myStepper.step(-stepsPerRevolution);
+	delay(1000);
 }
