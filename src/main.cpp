@@ -1,29 +1,25 @@
+// LCD with i2c backpack test
+// This example shows how to transfer an in-memory buffer to the LCD at once.
+// A TwoWire instance is given as a parameter to lcd.begin to show how to pass a
+// non default wire interface. Urs Utzinger, 2020
+
 #include <Arduino.h>
-#include <Adafruit_I2CDevice.h>
-#include <SPI.h>
-#include <AFMotor.h>
+#include <Wire.h>
 
-int dataPin = 9;    // к выводу 14 регистра SD
-int clockPin = 11;  // к выводу 11 регистра (SH_CP)
-int latchPin = 12;  // к выводу 12 регистра (ST_CP)
+#include "LiquidCrystal_PCF8574.h"
 
-void setByte(byte value) {
-	digitalWrite(latchPin, LOW); // начинаем передачу данных
-	// устанавливаем нужный байт
-	shiftOut(dataPin, clockPin, LSBFIRST, value);
-	digitalWrite(latchPin, HIGH); // прекращаем передачу данных
-}
+LiquidCrystal_PCF8574 lcd(0x27);
 
 void setup() {
-	pinMode(latchPin, OUTPUT);
-	pinMode(clockPin, OUTPUT);
-	pinMode(dataPin, OUTPUT);
-	digitalWrite(latchPin, LOW);
+    lcd.begin(16, 2);  // у нас экран 16 столбцов на 2 строки
+    lcd.setBacklight(255);  // установить яркость подсветки на максимум
+    lcd.clear();  // очистить экран и установить курсор в позицию 0, 0
 }
-
 void loop() {
-	setByte(0b11111111);
+	lcd.print("Hello World");
 	delay(3000);
+	lcd.setCursor(0, 1);
+	lcd.print(")))))");
+	delay(3000);
+	lcd.clear();
 }
-
-
