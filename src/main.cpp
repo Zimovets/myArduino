@@ -1,31 +1,26 @@
 #include <Arduino.h>
 
+#include <NewPing.h>
+
 // Используйте свои значения для выводов
-int trigPin = 12;
-int echoPin = 11;
+#define PIN_TRIG 12
+#define PIN_ECHO 11
+#define MAX_DISTANCE 200 // Константа для определения максимального расстояния, которое мы будем считать корректным.
+
+// Создаем объект, методами которого будем затем пользоваться для получения расстояния.
+// В качестве параметров передаём номера пинов, к которым подключены выходы ECHO и TRIG датчика
+NewPing sonar(PIN_TRIG, PIN_ECHO, MAX_DISTANCE);
 
 void setup() {
-  Serial.begin (9600);
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
-  int duration, distance;
-  // для большей точности установим значение LOW на пине Trig
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  // Теперь установим высокий уровень на пине Trig
-  digitalWrite(trigPin, HIGH);
-  // Подождем 10 микросекунд
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // Узнаем длительность высокого сигнала на пине Echo
-  duration = pulseIn(echoPin, HIGH);
-  // Рассчитаем расстояние
-  distance = duration / 58;
-  // Выводим значение в Serial Monitor
+  // Стартовая задержка, необходимая для корректной работы.
+  delay(50);
+  // Получаем значение от датчика расстояния
+  unsigned int distance = sonar.ping_cm();
+  // Выводим в монитор порта
   Serial.print(distance);
-  Serial.println(" cm");
-  delay(100);
+  Serial.println(" см");
 }
