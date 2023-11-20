@@ -1,26 +1,23 @@
 #include <Arduino.h>
 
-#include <NewPing.h>
-
-// Используйте свои значения для выводов
-#define PIN_TRIG 12
-#define PIN_ECHO 11
-#define MAX_DISTANCE 200 // Константа для определения максимального расстояния, которое мы будем считать корректным.
-
-// Создаем объект, методами которого будем затем пользоваться для получения расстояния.
-// В качестве параметров передаём номера пинов, к которым подключены выходы ECHO и TRIG датчика
-NewPing sonar(PIN_TRIG, PIN_ECHO, MAX_DISTANCE);
+#include <IRremote.hpp>
+#define IR_RECEIVE_PIN 7
 
 void setup() {
-  Serial.begin(9600);
+    IrReceiver.begin(IR_RECEIVE_PIN,
+                     ENABLE_LED_FEEDBACK);  // Start the receiver
+    Serial.begin(9600);
 }
 
 void loop() {
-  // Стартовая задержка, необходимая для корректной работы.
-  delay(50);
-  // Получаем значение от датчика расстояния
-  unsigned int distance = sonar.ping_cm();
-  // Выводим в монитор порта
-  Serial.print(distance);
-  Serial.println(" см");
+    if (IrReceiver.decode()) {
+        Serial.println(IrReceiver.decodedIRData.decodedRawData,
+                       HEX);  // Print "old" raw data
+        // USE NEW 3.x FUNCTIONS
+        IrReceiver.printIRResultShort(
+            &Serial);  // Print complete received data in one line
+        IrReceiver.printIRSendUsage(
+            &Serial);         // Print the statement required to send this data
+        IrReceiver.resume();  // Enable receiving of the next value
+    }
 }
