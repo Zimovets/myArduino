@@ -1,23 +1,33 @@
 #include <Arduino.h>
 
-#include <IRremote.hpp>
-#define IR_RECEIVE_PIN 7
+int ledPin = 13;  // инициализируем пин для светодиода
+int inputPin = 7;  // инициализируем пин для получения сигнала от пироэлектрического датчика движения
+int pirState = LOW;  // начинаем работу программы, предполагая, что движения нет
+int val = 0;  // переменная для чтения состояния пина
 
 void setup() {
-    IrReceiver.begin(IR_RECEIVE_PIN,
-                     ENABLE_LED_FEEDBACK);  // Start the receiver
-    Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);  // объявляем светодиод в качестве  OUTPUT
+  pinMode(inputPin, INPUT);  // объявляем датчик в качестве INPUT
+  Serial.begin(9600);
 }
 
 void loop() {
-    if (IrReceiver.decode()) {
-        Serial.println(IrReceiver.decodedIRData.decodedRawData,
-                       HEX);  // Print "old" raw data
-        // USE NEW 3.x FUNCTIONS
-        IrReceiver.printIRResultShort(
-            &Serial);  // Print complete received data in one line
-        IrReceiver.printIRSendUsage(
-            &Serial);         // Print the statement required to send this data
-        IrReceiver.resume();  // Enable receiving of the next value
+  val = digitalRead(inputPin);  // считываем значение с датчика
+  if (val == HIGH) {  // проверяем, соответствует ли считанное значение HIGH
+    digitalWrite(ledPin, HIGH);  // включаем светодиод
+    if (pirState == LOW) {
+      // мы только что включили
+      Serial.println("Motion detected!");
+      // мы выводим на серийный монитор изменение, а не состояние
+      pirState = HIGH;
     }
+  } else {
+    digitalWrite(ledPin, LOW); // выключаем светодиод
+    if (pirState == HIGH) {
+      // мы только что его выключили
+      Serial.println("Motion ended!");
+      // мы выводим на серийный монитор изменение, а не состояние
+      pirState = LOW;
+    }
+  }
 }
