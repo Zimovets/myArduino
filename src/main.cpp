@@ -1,38 +1,71 @@
 #include <Arduino.h>
+#include <SD.h>
+#include <SPI.h>
+#include <TFT.h>
 
-#include <TFT.h>                 // Подключаем библиотеку TFT  
-#include <SPI.h>                 // Подключаем библиотеку SPI
- 
-#define cs   10                  // Указываем пины cs
-#define dc   9                   // Указываем пины dc (A0)
-#define rst  8                   // Указываем пины reset
- 
+// pin definition for Arduino UNO
+#define sd_cs 4
+#define cs 10
+#define dc 9
+#define rst 8
+
+// create an instance of the library
 TFT TFTscreen = TFT(cs, dc, rst);
- 
-void setup() 
-{
-  TFTscreen.begin();
-  TFTscreen.background(0, 0, 0); // Очистим экран дисплея
-  TFTscreen.setTextSize(2);      // Устанавливаем размер шрифта
+
+PImage image;
+
+void setup() {
+    // initialize the library
+    TFTscreen.begin();
+
+    // clear the screen with a black background
+    TFTscreen.background(0, 0, 0);
+    // set the text size
+    TFTscreen.setTextSize(2);
+
+    Serial.begin(9600);
+
+    if (!SD.begin(sd_cs)) {
+        Serial.println("SC card dont detected!");
+        return;
+    }
+    Serial.println("SC card detected successfully!");
+
+    image = image.loadImage("nature1.bmp");
+
+    while (!image.isValid()) {
+        Serial.println("Loading image ......");
+        delay(1000);
+    }
+
+    Serial.println("Image loaded successfully!!!");
 }
- 
-void loop() 
-{
-/* 
-* Установка цвета фона TFTscreen.background ( r , g , b )
-* где, r, g и b являются значениями RGB для заданного цвета
-*/ 
-  TFTscreen.background ( 0 , 0 , 0 );
-/*
-* Команда установки цвета фона TFTscreen.stroke ( r , g , b )
-* где, r, g и b являются значениями RGB для заданного цвета
-*/  
-  TFTscreen.stroke(255, 0, 0);
-/*
- * Вывод текста на дисплей TFTscreen.text("Hello, World!", x, y);
- * где x и y координаты.
-*/
-  TFTscreen.text("Hello, World!", 6, 47);
-  TFTscreen.text("RobotChip", 30, 67);
-  delay(500);
+
+void loop() {
+    TFTscreen.background(0, 0, 0);
+
+    // generate a random color
+    int redRandom = random(0, 255);
+    int greenRandom = random(0, 255);
+    int blueRandom = random(0, 255);
+
+    // set a random font color
+    TFTscreen.stroke(redRandom, greenRandom, blueRandom);
+
+    // print Hello, World! in the middle of the screen
+    TFTscreen.text("Hello, World!", 6, 57);
+
+    // wait 200 miliseconds until change to next color
+    delay(3000);
+
+    Serial.println("Try to drow image");
+
+    TFTscreen.background(0, 0, 0);
+
+    // draw the image to the screen
+    int x = random(TFTscreen.width() - image.width());
+    int y = random(TFTscreen.height() - image.height());
+    TFTscreen.image(image, x, y);
+
+    delay(3000);
 }
